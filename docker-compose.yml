@@ -1,0 +1,14 @@
+version: '3'
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    image: my-web-image
+    environment:
+      - API_KEY=${API_KEY}
+    ports:
+      - "5000:5000"
+
+
+
