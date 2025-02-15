@@ -24,7 +24,6 @@ app.secret_key = os.urandom(24)
 # ================================
 # SQLAlchemy Configuration
 # ================================
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://mika:mikarotem@flask-db.c5sgseyquqxi.eu-central-1.rds.amazonaws.com:3306/task_manager_db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
