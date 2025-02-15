@@ -1,0 +1,7 @@
+---
+# - name: Run docker installation playbook
+#   import_playbook: ./install_docker.yml
+
+- name: Run QEMU setup playbook
+  import_playbook: ./setup_qemu.yml
+

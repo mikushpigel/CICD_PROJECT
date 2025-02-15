@@ -1,0 +1,147 @@
+@Library('jenkins-shared-lib') _
+
+pipeline {
+    agent {
+        kubernetes {
+            yamlFile 'pod-templates/dynamic-pod.yml'
+            defaultContainer 'agent'
+        }
+    }
+
+    environment {
+        SONAR_TOKEN = credentials('SONAR_TOKEN')
+        SONAR_PROJECT_KEY = 'Task_Manager_App'
+        SKIP_STAGE = "true"
+    }
+
+    stages {
+        stage('Verify Docker') {
+            steps {
+                container('agent') {
+                    sh '''
+                    # Wait for Docker daemon to start
+                    sleep 3
+                    # Verify Docker is running
+                    docker info
+                    '''
+                }
+            }
+        }
+        stage('Checkout') {
+            steps {
+                container('agent') {
+                    scmSkip(deleteBuild: true, skipPattern: '.*\\[ci skip\\].*')
+                }
+            }
+        }
+
+        stage('Parallel Tasks') {
+             parallel {
+                stage('Say Hello') {
+                    steps {
+                        container('agent') {
+                            seyHello()
+                }
+            }
+        }
+
+        stage('Static Code Analysis') {
+            steps {
+                container('agent') {
+                   sonarqubeAnalysis()
+                }
+            }
+        }
+
+        stage('Dependencies Scanning') {
+            steps {
+                container('agent') {
+                    dependencyScaning()
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                container('agent') {
+                    buildDocker()
+                }
+            }
+        }
+    }
+}
+
+         stage('Quality Gate') {
+            steps {
+                container('agent') { 
+                    sonarQualityGate()
+                }
+            }
+        }
+
+        
+        
+
+        stage('Test') {
+            steps {
+                container('agent') {
+                    runTests()
+                }
+            }
+        }
+
+        // stage('Update Version in README') {
+        //     steps {
+        //         container('agent') {
+        //             updateVersion()
+        //         }
+        //     }
+        // }
+
+        stage('Publish') {
+            steps {
+                container('agent') {
+                    publishImage()
+                }
+            }
+        }
+
+        stage('Sign Docker Image') {
+            steps {
+                container('agent') {
+                    signImage()
+                }
+            }
+        }
+
+        stage('Verify Container Image') {
+            steps {
+                container('agent') {
+                    verifyImage()
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            container('agent') {
+                cleanup {
+                    script {
+                        cleanUp()
+                    }
+                }
+            }
+        }
+        success {
+            container('agent') {
+                notifySlack('success')
+            }
+        }
+        failure {
+            container('agent') {
+                notifySlack('failure')
+            }
+        }
+    }
+}
