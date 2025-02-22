@@ -9,8 +9,7 @@ import redis
 import json
 from datetime import datetime
 import logging
-import hvac  # Library for communicating with Vault yaya
-
+import hvac  # Library for communicating with Vault
 load_dotenv()
 
 logger = logging.getLogger(__name__)
