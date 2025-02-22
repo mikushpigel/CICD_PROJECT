@@ -1,79 +1,56 @@
-# Task Manager CI/CD Pipeline: 1.0.22
+# CI/CD Pipeline for Task Manager App
 
-This project powers a modern **CI/CD pipeline** for a **Task Manager App** built in **Python**. It drives seamless continuous integration and deployment using **Jenkins**, **Docker**, **Amazon ECR**, and **ArgoCD**. The pipeline ensures an efficient, seamless, and reliable process for managing updates and releases. The entire project infrastructure is provisioned with **Terraform** for consistent and repeatable deployments, and all services run on **Amazon EKS**.
-
----
-
-## Project Structure
-This project is organized into three distinct repositories:
-- **Application Repo**: Contains the source code for the Task Manager App.
-- **IaC Repo**: Holds all Terraform configurations for provisioning the complete infrastructure.
-- **Jenkins Shared Libraries Repo**: Contains shared libraries and plugins (including the Jenkins Kubernetes Plugin) used across Jenkins jobs.
-
-All sensitive information (such as secrets and credentials) is securely stored in **Vault**.
-
----
-
-## Features
-- **Automated Build and Test**: Automatically builds and tests code upon each push.
-- **Static Code Analysis**: Ensures high-quality code using **SonarQube**.
-- **Functional Testing**: Validates application functionality using **Selenium**.
-- **Artifact Publishing**: Stores build artifacts in **Amazon ECR**.
-- **Kubernetes Deployment**: Deploys the application to **Amazon EKS** clusters using **ArgoCD**.
-- **Caching and Database Management**: Uses **Redis** for caching and **Amazon RDS** for database management.
-- **Jenkins Kubernetes Plugin**: Enhances integration with Kubernetes.
-- **Slack Notifications**: Sends pipeline status updates to **Slack**.
-
----
-
-## Prerequisites
-Before running this pipeline, ensure the following components are installed and configured:
-
-- **Jenkins**: Configured with the following plugins:
-  - Docker
-  - Amazon EC2
-  - Cloud Agent
-  - Slack
-  - Git
-  - Kubernetes
-- **Docker**: For containerizing the application.
-- **Amazon ECR**: For storing Docker images as build artifacts.
-- **Amazon EKS**: For deploying the application.
-- **ArgoCD**: For managing Kubernetes deployments.
-- **Terraform**: For provisioning the entire project infrastructure.
-- **Vault**: For securely managing sensitive information.
-- **SonarQube**: For static code analysis.
-- **Selenium**: For functional testing.
-- **Slack**: For receiving notifications on pipeline status.
+## Overview
+This project powers a modern **CI/CD pipeline** utilizing **GitLab** for source code management (SCM). On every push, **Jenkins** dynamically provisions a pod within **Amazon EKS** to run the pipeline. The process includes running static code analysis with **SonarQube** and functional testing with **Selenium**. After testing, updating version using **Semantic Release**, published to **Amazon ECR**, and then signed and verified using **Cosign**. Finally, the image is deployed to **Amazon EKS**, where the application connects to **Amazon RDS** for database management and **Redis** for caching. Additionally, **ArgoCD** running on the EKS cluster monitors GitLab for configuration changes and automatically triggers rolling updates to the application.
 
 ---
 
 ## Pipeline Workflow
-The CI/CD pipeline performs the following steps:
+1. **Code Checkout**  
+   - GitLab detects a push and triggers Jenkins to pull the latest code.
+2. **Static Analysis & Testing**  
+   - **SonarQube** performs static code analysis to ensure code quality.  
+   - **Selenium** executes functional tests to validate application behavior.
+3. **Image Build & Security**  
+   - A Docker image is built from the application code.  
+   - The image is published to **Amazon ECR**.  
+   - **Cosign** signs the image and verifies its integrity.
+4. **Deployment**  
+   - The verified image is deployed to **Amazon EKS**.  
+   - The application integrates with **Amazon RDS** for database management and **Redis** for caching.
+5. **Rolling Updates with ArgoCD**  
+   - **ArgoCD** monitors GitLab for any configuration changes.  
+   - Upon detecting updates, it performs a rolling update to ensure zero downtime.
 
-1. **Code Checkout**: Jenkins retrieves the latest code from the repository.
-2. **Static Analysis**: SonarQube performs static analysis to maintain code quality.
-3. **Build**: Compiles the application code and creates a Docker image.
-4. **Testing**: Executes Selenium tests to validate the application's functionality.
-5. **Artifact Publishing**: Pushes the Docker image to **Amazon ECR** for storage.
-6. **Deployment**: Deploys the application to **Amazon EKS** using **ArgoCD**.
-7. **Notifications**: Sends Slack notifications regarding the pipeline's progress and results.
+---
+
+## Project Structure
+- **Application Repo**: Contains the source code for the Task Manager App.
+- **IaC Repo**: Contains Terraform configurations for provisioning the complete infrastructure.
+- **Jenkins Shared Libraries Repo**: Contains all the functions executed within the pipeline stages.
 
 ---
 
 ## Technologies Used
-This project leverages a range of modern technologies:
+- **☁️ Cloud Platform: AWS**  
+  - Services: EKS, ECR, RDS, EBS
+- **🐳 Container Runtime: Docker**
+- **☸️ Container Orchestration: Kubernetes (EKS)**
+- **🏗️ Infrastructure as Code: Terraform**
+- **🔐 Secret Management: HashiCorp Vault**
+- **🤖 CI/CD Tools**:  
+  - **Jenkins**  
+  - **GitLab** (SCM)  
+  - **ArgoCD** (GitOps workflow)
+- **🔎 Static Code Analysis: SonarQube**
+- **🧪 Functional Testing: Selenium**
+- **🔏 Security Tools**:  
+  - **Cosign** (Image signing and verification)
+- **🗃️ Caching**: Redis
 
-- **Jenkins**: For CI/CD automation.
-- **Docker**: To containerize the application.
-- **Amazon ECR**: For storing Docker images.
-- **Amazon EKS**: For Kubernetes-based deployments.
-- **ArgoCD**: For GitOps-based Kubernetes deployment.
-- **Terraform**: For provisioning the entire project infrastructure.
-- **Vault**: For secure storage of sensitive information.
-- **SonarQube**: For static code analysis.
-- **Selenium**: For functional testing.
-- **Redis**: For caching.
-- **Amazon RDS**: For database management.
-- **Slack**: For sending pipeline status notifications.
-- **Jenkins Kubernetes Plugin**: For enhanced Kubernetes integration.
+---
+
+## Additional Notes
+- **Dynamic Pod Execution**: Jenkins dynamically creates a pod in EKS for each pipeline run, ensuring an isolated and scalable execution environment.
+- **GitOps with ArgoCD**: ArgoCD continuously monitors GitLab for configuration changes and automatically initiates rolling updates to keep the deployment in sync with the source code.
+
