@@ -1,3 +1,4 @@
+__version__ = "0.2.30" 
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_session import Session
@@ -8,7 +9,7 @@ import redis
 import json
 from datetime import datetime
 import logging
-import hvac  # Library for communicating with Vault
+import hvac  # Library for communicating with Vault yaya
 
 load_dotenv()
 
@@ -21,9 +22,14 @@ logging.basicConfig(
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
+
+@app.route('/version')
+def version():
+    return f"Application version: {__version__}"
+
+
 vault_addr = os.getenv("VAULT_ADDR", "http://vault.vault.svc.cluster.local:8200")
 vault_token = os.getenv("VAULT_TOKEN")
-
 
 try:
     vault_client = hvac.Client(url=vault_addr, token=vault_token)
@@ -80,7 +86,7 @@ def get_cached_todos(user_id):
    cached_data = redis_client.get(cache_key)
    
    if cached_data:
-       logger.info(f"\n🚀 Retrieving data from Redis cache for user {user_id}")
+       logger.info(f"\n🚀 -Retrieving data from Redis cache for user {user_id}")
        return json.loads(cached_data)
    
    logger.info(f"\n📁 No data in cache! Retrieving data from the database for user {user_id}")

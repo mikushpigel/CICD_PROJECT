@@ -17,8 +17,8 @@ spec:
       - name: docker-graph-storage
         mountPath: /var/lib/docker
     env:
-    - name: SERVICE_URL
-      value: "http://flask-app.default.svc.cluster.local"
+    - name: VAULT_TOKEN
+      value: ""
   volumes:
   - name: docker-graph-storage
     emptyDir: {}

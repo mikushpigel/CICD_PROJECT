@@ -15,18 +15,18 @@ pipeline {
     }
 
     stages {
-        stage('Verify Docker') {
-            steps {
-                container('agent') {
-                    sh '''
-                    # Wait for Docker daemon to start
-                    sleep 3
-                    # Verify Docker is running
-                    docker info
-                    '''
-                }
-            }
-        }
+        // stage('Verify Docker') {
+        //     steps {
+        //         container('agent') {
+        //             sh '''
+        //             # Wait for Docker daemon to start
+        //             sleep 3
+        //             # Verify Docker is running
+        //             docker info
+        //             '''
+        //         }
+        //     }
+        // }
         stage('Checkout') {
             steps {
                 container('agent') {
@@ -90,13 +90,13 @@ pipeline {
             }
         }
 
-        // stage('Update Version in README') {
-        //     steps {
-        //         container('agent') {
-        //             updateVersion()
-        //         }
-        //     }
-        // }
+        stage('Update Version in README') {
+            steps {
+                container('agent') {
+                    updateVersion()
+                }
+            }
+        }
 
         stage('Publish') {
             steps {
@@ -121,18 +121,21 @@ pipeline {
                 }
             }
         }
+         stage('Deploy') {
+            steps {
+                container('agent') {
+                    deployToEKS()
+                }
+            }
+         }
     }
 
     post {
         always {
             container('agent') {
-                cleanup {
-                    script {
                         cleanUp()
-                    }
                 }
             }
-        }
         success {
             container('agent') {
                 notifySlack('success')

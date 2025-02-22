@@ -1,4 +1,4 @@
-# Task Manager CI/CD Pipeline: 1.0.21
+# Task Manager CI/CD Pipeline: 1.0.22
 
 This project powers a modern **CI/CD pipeline** for a **Task Manager App** built in **Python**. It drives seamless continuous integration and deployment using **Jenkins**, **Docker**, **Amazon ECR**, and **ArgoCD**. The pipeline ensures an efficient, seamless, and reliable process for managing updates and releases. The entire project infrastructure is provisioned with **Terraform** for consistent and repeatable deployments, and all services run on **Amazon EKS**.
 
