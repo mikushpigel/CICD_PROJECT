@@ -1,25 +1,28 @@
 # CI/CD Pipeline for Task Manager App
 
 ## Overview
-This project powers a modern **CI/CD pipeline** utilizing **GitLab** for source code management (SCM). On every push, **Jenkins** dynamically provisions a pod within **Amazon EKS** to run the pipeline. The process includes running static code analysis with **SonarQube** and functional testing with **Selenium**. After testing, updating version using **Semantic Release**, published to **Amazon ECR**, and then signed and verified using **Cosign**. Finally, the image is deployed to **Amazon EKS**, where the application connects to **Amazon RDS** for database management and **Redis** for caching. Additionally, **ArgoCD** running on the EKS cluster monitors GitLab for configuration changes and automatically triggers rolling updates to the application.
+This project powers a modern **CI/CD pipeline** utilizing **GitLab** for source code management (SCM). On every push, **Jenkins** dynamically provisions a pod within **Amazon EKS** to run the pipeline. The process begins with building a Docker image from the latest code, followed by dependency scanning to detect vulnerabilities in third-party libraries. Next, static code analysis with **SonarQube** and functional testing with **Selenium** are executed. Once the tests pass, the Docker image is published to **Amazon ECR**, then signed and verified using **Cosign**. Finally, the verified image is deployed to **Amazon EKS**, where the application connects to **Amazon RDS** for database management and **Redis** for caching. The entire infrastructure is provisioned using **Terraform** to deploy the necessary AWS resources. Additionally, **ArgoCD** running on the EKS cluster monitors GitLab for configuration changes and automatically triggers rolling updates to the application.
 
 ---
 
 ## Pipeline Workflow
 1. **Code Checkout**  
    - GitLab detects a push and triggers Jenkins to pull the latest code.
-2. **Static Analysis & Testing**  
+2. **Image Build**  
+   - A Docker image is built from the application code.
+3. **Dependency Scanning**  
+   - The built image is scanned for vulnerabilities in dependencies to ensure security.
+4. **Static Analysis & Testing**  
    - **SonarQube** performs static code analysis to ensure code quality.  
    - **Selenium** executes functional tests to validate application behavior.
-3. **Image Build & Security**  
-   - A Docker image is built from the application code.  
-   - The image is published to **Amazon ECR**.  
+5. **Artifact Publishing & Security**  
+   - The Docker image is published to **Amazon ECR**.  
    - **Cosign** signs the image and verifies its integrity.
-4. **Deployment**  
+6. **Deployment**  
    - The verified image is deployed to **Amazon EKS**.  
    - The application integrates with **Amazon RDS** for database management and **Redis** for caching.
-5. **Rolling Updates with ArgoCD**  
-   - **ArgoCD** monitors GitLab for any configuration changes.  
+7. **Rolling Updates with ArgoCD**  
+   - **ArgoCD** monitors GitLab for configuration changes.  
    - Upon detecting updates, it performs a rolling update to ensure zero downtime.
 
 ---
@@ -46,7 +49,9 @@ This project powers a modern **CI/CD pipeline** utilizing **GitLab** for source 
 - **🧪 Functional Testing: Selenium**
 - **🔏 Security Tools**:  
   - **Cosign** (Image signing and verification)
+  - **Dependency Scanning** (for detecting vulnerabilities in third-party libraries)
 - **🗃️ Caching**: Redis
+- **🐍 Programming Language: Python**
 
 ---
 
