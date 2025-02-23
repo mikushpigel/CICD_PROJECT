@@ -66,6 +66,7 @@ This project powers a modern **CI/CD pipeline** utilizing **GitLab** for source 
 ```mermaid
 %% קובץ Mermaid של Task Manager Architecture %%
 flowchart LR
+linkStyle default stroke:#000000,stroke-width:2px
   subgraph EKS["EKS Cluster"]
     direction TB
       DynamicAgent(["Dynamic Agent"])
