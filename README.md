@@ -61,7 +61,7 @@ This project powers a modern **CI/CD pipeline** utilizing **GitLab** for source 
 
 ---
 
-### 🏗️ System Architecture Diagram
+## 🏗️ System Architecture Diagram
 
 ```mermaid
 %% קובץ Mermaid של Task Manager Architecture %%
