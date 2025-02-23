@@ -59,6 +59,10 @@ This project powers a modern **CI/CD pipeline** utilizing **GitLab** for source 
 - **Dynamic Pod Execution**: Jenkins dynamically creates a pod in EKS for each pipeline run, ensuring an isolated and scalable execution environment.
 - **GitOps with ArgoCD**: ArgoCD continuously monitors GitLab for configuration changes and automatically initiates rolling updates to keep the deployment in sync with the source code.
 
+---
+
+### 🏗️ System Architecture Diagram
+
 ```mermaid
 %% קובץ Mermaid של Task Manager Architecture %%
 flowchart LR
