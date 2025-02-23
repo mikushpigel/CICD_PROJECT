@@ -59,3 +59,67 @@ This project powers a modern **CI/CD pipeline** utilizing **GitLab** for source 
 - **Dynamic Pod Execution**: Jenkins dynamically creates a pod in EKS for each pipeline run, ensuring an isolated and scalable execution environment.
 - **GitOps with ArgoCD**: ArgoCD continuously monitors GitLab for configuration changes and automatically initiates rolling updates to keep the deployment in sync with the source code.
 
+```mermaid
+%% קובץ Mermaid של Task Manager Architecture %%
+flowchart LR
+  subgraph EKS["EKS Cluster"]
+    direction TB
+      DynamicAgent(["Dynamic Agent"])
+      ArgoCD(["ArgoCD"])
+      TaskManager(["Tasks Manager App"])
+      Vault(["Vault"])
+      Redis(["Redis"])
+  end
+  subgraph Private_Subnet["Private Subnet"]
+    direction TB
+      GitLab["GitLab Server (Container)"]
+      Jenkins["Jenkins Server (Container)"]
+      Sonar["Sonar (Container)"]
+      EKS
+  end
+  subgraph Public_Subnet["Public Subnet"]
+    direction TB
+      ALB(("Application Load Balancer"))
+  end
+  subgraph AWS_VPC["AWS VPC"]
+    direction LR
+      Private_Subnet
+      Public_Subnet
+  end
+  subgraph AWS["AWS"]
+    direction LR
+      AmazonECR["Amazon ECR"]
+      AmazonRDS["Amazon RDS"]
+      AmazonEBS["Amazon EBS"]
+      AWS_VPC
+  end
+  GitLab -- Webhook --> Jenkins
+  Jenkins -- Create --> DynamicAgent
+  DynamicAgent -- Code Analysis --> Sonar
+  DynamicAgent -- Push Image --> AmazonECR
+  AmazonECR -- Update Deployment --> TaskManager
+  Vault -- Use Credentials --> DynamicAgent & ArgoCD
+  Vault -- Save Credentials --> AmazonEBS
+  ArgoCD -- Deploy --> TaskManager
+  ALB -- Route Traffic --> TaskManager
+  TaskManager -- Caching --> Redis
+  TaskManager -- Pull Data And Update Redis --> AmazonRDS
+  style DynamicAgent fill:#F48FB1,stroke:#AD1457,color:#000000,stroke-width:1px
+  style ArgoCD fill:#F48FB1,stroke:#AD1457,color:#000000,stroke-width:1px
+  style TaskManager fill:#F48FB1,stroke:#AD1457,color:#000000,stroke-width:1px
+  style Vault fill:#F48FB1,stroke:#AD1457,color:#000000,stroke-width:1px
+  style Redis fill:#F48FB1,stroke:#AD1457,color:#000000,stroke-width:1px
+  style GitLab fill:#F3E5F5,stroke:#9C27B0,color:#000000,stroke-width:1px
+  style Jenkins fill:#F3E5F5,stroke:#9C27B0,color:#000000,stroke-width:1px
+  style Sonar fill:#F3E5F5,stroke:#9C27B0,color:#000000,stroke-width:1px
+  style EKS fill:#E1BEE7,stroke:#8E24AA,color:#000000,stroke-width:1px
+  style ALB fill:#FCE4EC,stroke:#C2185B,color:#000000,stroke-width:1px
+  style Private_Subnet fill:#FFF8E1,stroke:#FBC02D,color:#000000,stroke-width:1px
+  style Public_Subnet fill:#FFF3E0,stroke:#FFB300,color:#000000,stroke-width:1px
+  style AmazonECR fill:#FFF9C4,stroke:#FBC02D,color:#000000,stroke-width:1px
+  style AmazonRDS fill:#FFF9C4,stroke:#FBC02D,color:#000000,stroke-width:1px
+  style AmazonEBS fill:#FFF9C4,stroke:#FBC02D,color:#000000,stroke-width:1px
+  style AWS_VPC fill:#FCE4EC,stroke:#EC407A,color:#000000,stroke-width:2px
+  style AWS fill:#F3E5F5,stroke:#9C27B0,color:#000000,stroke-width:2px
+
+
