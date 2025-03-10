@@ -1,6 +1,5 @@
-###############################
+
 # Helm Release for ArgoCD
-###############################
 resource "helm_release" "argocd" {
   name       = "argocd"
   repository = "https://argoproj.github.io/argo-helm"
@@ -29,9 +28,7 @@ resource "helm_release" "argocd" {
   ]
 }
 
-###############################
 # ArgoCD Service Account, Cluster Role & Binding
-###############################
 resource "kubernetes_service_account" "argocd" {
   metadata {
     name      = "argocd-sa"
@@ -69,9 +66,7 @@ resource "kubernetes_cluster_role_binding" "argocd" {
   }
 }
 
-###############################
 # Data Sources for ArgoCD Service & Admin Password
-###############################
 data "kubernetes_service" "argocd_server" {
   metadata {
     name      = "argocd-server"
