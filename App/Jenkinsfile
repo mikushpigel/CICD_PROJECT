@@ -37,13 +37,6 @@ pipeline {
 
         stage('Parallel Tasks') {
              parallel {
-                stage('Say Hello') {
-                    steps {
-                        container('agent') {
-                            seyHello()
-                }
-            }
-        }
 
         stage('Static Code Analysis') {
             steps {
