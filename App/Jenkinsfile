@@ -83,7 +83,7 @@ pipeline {
             }
         }
 
-        stage('Update Version in README') {
+        stage('Versioning'){
             steps {
                 container('agent') {
                     updateVersion()
