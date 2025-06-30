@@ -1,5 +1,6 @@
 # CI/CD Pipeline for Task Manager App
 
+
 ## Overview
 This project powers a modern **CI/CD pipeline** utilizing **GitLab** for source code management (SCM). On every push, **Jenkins** dynamically provisions a pod within **Amazon EKS** to run the pipeline. The process begins with building a Docker image from the latest code, followed by dependency scanning to detect vulnerabilities in third-party libraries. Next, static code analysis with **SonarQube** and functional testing with **Selenium** are executed. Once the tests pass, the Docker image is published to **Amazon ECR**, then signed and verified using **Cosign**. Finally, the verified image is deployed to **Amazon EKS**, where the application connects to **Amazon RDS** for database management and **Redis** for caching. The entire infrastructure is provisioned using **Terraform** to deploy the necessary AWS resources. Additionally, **ArgoCD** running on the EKS cluster monitors GitLab for configuration changes and automatically triggers rolling updates to the application.
 
