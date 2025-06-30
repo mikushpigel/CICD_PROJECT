@@ -17,8 +17,7 @@ resource "aws_iam_role_policy_attachment" "eks_node_policies" {
   for_each = toset([
     "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
     "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser",
-    "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
-    "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+    "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
   ])
   role       = aws_iam_role.eks_node_role.name
   policy_arn = each.value
