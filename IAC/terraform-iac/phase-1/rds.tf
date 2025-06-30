@@ -8,7 +8,7 @@ resource "aws_security_group" "rds" {
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] 
+    cidr_blocks = ["10.0.0.0/16"] 
   }
 
   egress {
@@ -33,7 +33,7 @@ resource "aws_security_group" "redis_sg" {
     from_port   = 6379
     to_port     = 6379
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  
+    cidr_blocks = ["10.0.0.0/16"]  
   }
 
   egress {
@@ -73,6 +73,7 @@ resource "aws_db_instance" "flask" {
   db_subnet_group_name   = aws_db_subnet_group.flask.name
   vpc_security_group_ids = [aws_security_group.rds.id]
 
+  publicly_accessible = false
   skip_final_snapshot = true
 
   tags = {
